@@ -12,7 +12,7 @@
             </dependencies>
         </groups>
         <packages>
-            <package name="com.petrovma92.tests.task_1_1" />
+            <package name="com.petrovma92.tests" />
         </packages>
     </test>
 </suite>
