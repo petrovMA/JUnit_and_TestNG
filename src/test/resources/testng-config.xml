@@ -2,6 +2,7 @@
 
 <suite name="Suite1" verbose="1" >
     <test name="Test1"   >
+<!--
         <groups>
             <run>
                 <include name="positive"/>
@@ -11,6 +12,7 @@
                 <group name="negative" depends-on="positive"/>
             </dependencies>
         </groups>
+-->
         <packages>
             <package name="com.petrovma92.tests.task_1_1" />
         </packages>
