@@ -1,11 +1,14 @@
 package com.petrovma92.tests;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,10 +19,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class NegativeTests extends MainTest {
+import static com.petrovma92.tests.MainTest.*;
 
-    @DataProvider
-    private Iterator<Object[]> negativeTestFromFile() throws IOException, JSONException {
+@RunWith(JUnitParamsRunner.class)
+public class NegativeTests {
+
+    @Parameters
+    public Iterator<Object[]> negativeTestFromFile() throws IOException, JSONException {
         System.out.println("\u001B[36m\u001B[01m\n@DataProvider\u001B[36m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
         List<Object[]> data = new ArrayList<>();
@@ -43,32 +49,35 @@ public class NegativeTests extends MainTest {
         return data.iterator();
     }
 
-    @DataProvider
-    private Iterator<Object[]> negativeTestRandom() throws IOException, JSONException {
+    @Parameters
+    public Iterator<Object[]> negativeTestRandom() throws IOException, JSONException {
         System.out.println("\u001B[36m\u001B[01m\n@DataProvider\u001B[36m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
 
         List<Object[]> data = new ArrayList<>();
 
         data.add(new Object[]{
-                super.generateRandomString(20, false, true, false),
-                super.generateRandomString(20, false, false, false)});
+                generateRandomString(20, false, true, false),
+                generateRandomString(20, false, false, false)});
 
         data.add(new Object[]{
-                super.generateRandomString(20, false, true, true),
-                super.generateRandomString(0, false, true, false)});
+                generateRandomString(20, false, true, true),
+                generateRandomString(0, false, true, false)});
 
         data.add(new Object[]{
-                super.generateRandomString(20, false, false, true),
-                super.generateRandomString(5, true, true, true)});
+                generateRandomString(20, false, false, true),
+                generateRandomString(5, true, true, true)});
 
         return data.iterator();
     }
 
-    //    @Test(dataProvider = "negativeTestFromFile", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
-    @Test(dataProvider = "negativeTestRandom", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
+    @Test(expected = Exception.class)
+    @Parameters(method = "negativeTestFromFile")
+//    @Parameters(method = "negativeTestRandom")
     public void negativeTestCreateException(String fileNameExist, String fileNameException) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
+
+        Assume.assumeTrue(getTempFile().isDirectory());
 
         if (fileNameException == null || fileNameException.isEmpty())
         {
@@ -81,10 +90,13 @@ public class NegativeTests extends MainTest {
         }
     }
 
-    //    @Test(dataProvider = "negativeTestFromFile", groups = "negative", alwaysRun = true)
-    @Test(dataProvider = "negativeTestRandom", groups = "negative", alwaysRun = true)
+    @Test
+    @Parameters(method = "negativeTestFromFile")
+//    @Parameters(method = "negativeTestRandom")
     public void negativeTestCreateFileAlreadyExist(String fileNameExist, String fileNameException) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
+
+        Assume.assumeTrue(getTempFile().isDirectory());
 
         if (fileNameExist != null && !fileNameExist.isEmpty())
         {

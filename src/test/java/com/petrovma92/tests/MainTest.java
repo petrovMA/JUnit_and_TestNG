@@ -1,6 +1,10 @@
 package com.petrovma92.tests;
 
-import org.testng.annotations.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,19 +12,21 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Random;
 
+@RunWith(Suite.class)
+@SuiteClasses({
+        PositiveTests.class,
+        NegativeTests.class
+})
 public class MainTest {
-    private File tempFile;
+    private static File tempFile;
     static String pathToTempFile;
 
     static File fileSimpleName;
     static File fileNameWithExtension;
     static File fileSpecCharName;
 
-    @Test
-    public void empty(){}
-
-    @BeforeSuite(groups = {"negative", "positive"})
-    private void preConditions() throws IOException {
+    @BeforeClass
+    public static void preConditions() throws IOException {
         System.out.println("\u001B[32m\u001B[01m=============\n@BeforeSuite");
         File currentDirFile = new File(".");
         String helper = currentDirFile.getCanonicalPath();
@@ -31,8 +37,8 @@ public class MainTest {
         System.out.println("createTempDirectory\u001B[0m");
     }
 
-    @AfterSuite(groups = {"negative", "positive"})
-    private void postConditions() {
+    @AfterClass
+    public static void postConditions() {
         System.out.println("\n\u001B[32m\u001B[01m@AfterSuite\u001B[0m");
         File[] files = new File(pathToTempFile).listFiles();
 
@@ -45,7 +51,7 @@ public class MainTest {
         System.out.println("\u001B[32m\u001B[01mdeleteTempDirectory: " + String.valueOf(tempFile.delete()).toUpperCase() + "\n==============\u001B[0m");
     }
 
-    String generateRandomString(int length, boolean upperChar, boolean lowerChar, boolean integer) {
+    static String generateRandomString(int length, boolean upperChar, boolean lowerChar, boolean integer) {
         Random random = new Random();
         StringBuilder builder = new StringBuilder();
 
@@ -106,5 +112,9 @@ public class MainTest {
         }
 
         return builder.toString();
+    }
+
+    public static File getTempFile() {
+        return tempFile;
     }
 }

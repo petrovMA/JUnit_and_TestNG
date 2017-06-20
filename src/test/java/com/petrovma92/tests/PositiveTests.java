@@ -1,13 +1,15 @@
 package com.petrovma92.tests;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.assertj.core.api.SoftAssertions;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.testng.Assert;
-import org.testng.AssertJUnit;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +20,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class PositiveTests extends MainTest {
+import static com.petrovma92.tests.MainTest.*;
 
-    @DataProvider
-    private Iterator<Object[]> positiveTestFromFile() throws IOException, JSONException {
+@RunWith(JUnitParamsRunner.class)
+public class PositiveTests {
+
+    @Parameters
+    public Iterator<Object[]> positiveTestFromFile() throws IOException, JSONException {
         System.out.println("\u001B[36m\u001B[01m\n@DataProvider\u001B[36m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
         List<Object[]> data = new ArrayList<>();
@@ -48,81 +53,90 @@ public class PositiveTests extends MainTest {
         return data.iterator();
     }
 
-    @DataProvider
-    private Iterator<Object[]> positiveTestRandom() throws IOException, JSONException {
+    @Parameters
+    public Iterator<Object[]> positiveTestRandom() throws IOException, JSONException {
         System.out.println("\u001B[36m\u001B[01m\n@DataProvider\u001B[36m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
         List<Object[]> data = new ArrayList<>();
 
         data.add(new Object[]{
-                super.generateRandomString(20, false, true, false),
-                super.generateRandomString(20, false, true, false) + "." +super.generateRandomString(2, false, true, false),
-                super.generateRandomString(20, true, false, false)});
+                generateRandomString(20, false, true, false),
+                generateRandomString(20, false, true, false) + "." +generateRandomString(2, false, true, false),
+                generateRandomString(20, true, false, false)});
 
         data.add(new Object[]{
-                super.generateRandomString(20, false, true, true),
-                super.generateRandomString(19, true, true, false) + "." +super.generateRandomString(3, false, true, false),
-                super.generateRandomString(20, false, true, false)});
+                generateRandomString(20, false, true, true),
+                generateRandomString(19, true, true, false) + "." +generateRandomString(3, false, true, false),
+                generateRandomString(20, false, true, false)});
 
         data.add(new Object[]{
-                super.generateRandomString(20, true, false, true),
-                super.generateRandomString(18, true, true, true) + "." +super.generateRandomString(4, false, true, false),
-                super.generateRandomString(20, false, false, true)});
+                generateRandomString(20, true, false, true),
+                generateRandomString(18, true, true, true) + "." +generateRandomString(4, false, true, false),
+                generateRandomString(20, false, false, true)});
 
         data.add(new Object[]{
-                super.generateRandomString(20, false, false, true),
-                super.generateRandomString(15, true, true, true) + "." +super.generateRandomString(7, true, true, false),
-                super.generateRandomString(20, false, false, false)});
+                generateRandomString(20, false, false, true),
+                generateRandomString(15, true, true, true) + "." +generateRandomString(7, true, true, false),
+                generateRandomString(20, false, false, false)});
 
         return data.iterator();
     }
 
-    //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
-    @Test(dataProvider = "positiveTestRandom", groups = "positive")
+    @Test
+//    @Parameters(method = "positiveTestFromFile")
+    @Parameters(method = "positiveTestRandom")
     public void positiveTestCreateFile(String fileName, String fileNameExtension, String specificChar) throws IOException {
         System.out.println("\u001B[34m\n" + getClass().getName() + "." + new Object() {
         }.getClass().getEnclosingMethod().getName() + "\u001B[0m");
 
+        Assume.assumeTrue(getTempFile().isDirectory());
+
         if (fileName != null && !fileName.isEmpty())
         {
             fileSimpleName = new File(pathToTempFile, fileName);
-            AssertJUnit.assertTrue("Не удалось создать файл с именем: " + fileSimpleName.getName(), fileSimpleName.createNewFile());
-            AssertJUnit.assertTrue("Файл с именем: \"" + fileSimpleName.getName() + "\" не найден", fileSimpleName.exists());
+            Assert.assertTrue("Не удалось создать файл с именем: " + fileSimpleName.getName(), fileSimpleName.createNewFile());
+            Assert.assertTrue("Файл с именем: \"" + fileSimpleName.getName() + "\" не найден", fileSimpleName.exists());
         }
         else
             System.out.println("\u001B[36mIGNORE");
 
     }
 
-    //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
-    @Test(dataProvider = "positiveTestRandom", groups = "positive")
+    @Test
+    @Parameters(method = "positiveTestFromFile")
+//    @Parameters(method = "positiveTestRandom")
     public void positiveTestCreateFileWithExtension(String fileName, String fileNameExtension, String specificChar) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
+
+        Assume.assumeTrue(getTempFile().isDirectory());
 
         if (fileNameExtension != null && !fileNameExtension.isEmpty())
         {
             fileNameWithExtension = new File(pathToTempFile, fileNameExtension);
-            SoftAssert softAssert = new SoftAssert();
-            softAssert.assertTrue(fileNameWithExtension.createNewFile(), "[Не удалось создать файл]");
-            softAssert.assertTrue(fileNameWithExtension.getName().matches(".+\\..+"), "[У файла нет расширения]");
-            softAssert.assertEquals(fileNameWithExtension.getName(), fileNameExtension, "[Имена файлов не совпадают]");
-            softAssert.assertTrue(fileNameWithExtension.exists(), "[Файл не найден]");
+            SoftAssertions softAssert = new SoftAssertions();
+            softAssert.assertThat(fileNameWithExtension.createNewFile()).isTrue();
+            softAssert.assertThat(fileNameWithExtension.getName().matches(".+\\..+")).isTrue();
+            softAssert.assertThat(fileNameWithExtension.getName()).isEqualTo(fileNameExtension);
+            softAssert.assertThat(fileNameWithExtension.exists()).isTrue();
             softAssert.assertAll();
         }
         else
             System.out.println("\u001B[36mIGNORE");
     }
 
-    //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
-    @Test(dataProvider = "positiveTestRandom", groups = "positive")
+    @Test
+//    @Parameters(method = "positiveTestFromFile")
+    @Parameters(method = "positiveTestRandom")
     public void positiveTestCreateFileWithSpecificChar(String fileName, String fileNameExtension, String specificChar) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
+
+        Assume.assumeTrue(getTempFile().isDirectory());
 
         if (specificChar != null && !specificChar.isEmpty())
         {
             fileSpecCharName = new File(pathToTempFile, specificChar);
-            Assert.assertTrue(fileSpecCharName.createNewFile(), "Не удалось создать файл с именем: " + fileSpecCharName.getName());
-            Assert.assertTrue(fileSpecCharName.exists(), "Файл не найден");
+            Assert.assertTrue("Не удалось создать файл с именем: " + fileSpecCharName.getName(), fileSpecCharName.createNewFile());
+            Assert.assertTrue("Файл не найден", fileSpecCharName.exists());
         }
         else
             System.out.println("\u001B[36mIGNORE");
