@@ -2,6 +2,8 @@ package com.petrovma92.tests;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -25,31 +27,36 @@ public class MainTest {
     static File fileNameWithExtension;
     static File fileSpecCharName;
 
-    @BeforeClass
-    public static void preConditions() throws IOException {
-        System.out.println("\u001B[32m\u001B[01m=============\n@BeforeSuite");
-        File currentDirFile = new File(".");
-        String helper = currentDirFile.getCanonicalPath();
+    @ClassRule
+    public static ExternalResource suiteRule = new ExternalResource() {
 
-        tempFile = Files.createTempDirectory(Paths.get(helper), "tmpDir").toFile();
-        pathToTempFile = tempFile.getAbsolutePath();
+        @Override
+        protected void before() throws IOException {
+            System.out.println("\u001B[32m\u001B[01m=============\n@ClassRule(Before)");
+            File currentDirFile = new File(".");
+            String helper = currentDirFile.getCanonicalPath();
 
-        System.out.println("createTempDirectory\u001B[0m");
-    }
+            tempFile = Files.createTempDirectory(Paths.get(helper), "tmpDir").toFile();
+            pathToTempFile = tempFile.getAbsolutePath();
 
-    @AfterClass
-    public static void postConditions() {
-        System.out.println("\n\u001B[32m\u001B[01m@AfterSuite\u001B[0m");
-        File[] files = new File(pathToTempFile).listFiles();
-
-        if(files != null) {
-            for (File f : files) {
-                System.out.println("deleteFile fileName = " + f.getName() + " \t\t" + String.valueOf(f.delete()).toUpperCase());
-            }
+            System.out.println("createTempDirectory\u001B[0m");
         }
 
-        System.out.println("\u001B[32m\u001B[01mdeleteTempDirectory: " + String.valueOf(tempFile.delete()).toUpperCase() + "\n==============\u001B[0m");
-    }
+        @Override
+        protected void after() {
+            System.out.println("\n\u001B[32m\u001B[01m@ClassRule(After)\u001B[0m");
+            File[] files = new File(pathToTempFile).listFiles();
+
+            if(files != null) {
+                for (File f : files) {
+                    System.out.println("deleteFile fileName = " + f.getName() + " \t\t" + String.valueOf(f.delete()).toUpperCase());
+                }
+            }
+
+            System.out.println("\u001B[32m\u001B[01mdeleteTempDirectory: " + String.valueOf(tempFile.delete()).toUpperCase() + "\n==============\u001B[0m");
+        }
+
+    };
 
     static String generateRandomString(int length, boolean upperChar, boolean lowerChar, boolean integer) {
         Random random = new Random();
