@@ -8,7 +8,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import java.io.File;
@@ -24,6 +26,9 @@ import static com.petrovma92.tests.MainTest.*;
 
 @RunWith(JUnitParamsRunner.class)
 public class PositiveTests {
+
+    @Rule
+    public TestRule runTwiceRule = new RunAgainRule();
 
     @Parameters
     public Iterator<Object[]> positiveTestFromFile() throws IOException, JSONException {
@@ -83,6 +88,7 @@ public class PositiveTests {
     }
 
     @Test
+    @Unstable(2)
 //    @Parameters(method = "positiveTestFromFile")
     @Parameters(method = "positiveTestRandom")
     public void positiveTestCreateFile(String fileName, String fileNameExtension, String specificChar) throws IOException {
@@ -103,6 +109,7 @@ public class PositiveTests {
     }
 
     @Test
+    @Unstable(4)
     @Parameters(method = "positiveTestFromFile")
 //    @Parameters(method = "positiveTestRandom")
     public void positiveTestCreateFileWithExtension(String fileName, String fileNameExtension, String specificChar) throws IOException {
@@ -125,6 +132,7 @@ public class PositiveTests {
     }
 
     @Test
+    @Unstable(6)
 //    @Parameters(method = "positiveTestFromFile")
     @Parameters(method = "positiveTestRandom")
     public void positiveTestCreateFileWithSpecificChar(String fileName, String fileNameExtension, String specificChar) throws IOException {

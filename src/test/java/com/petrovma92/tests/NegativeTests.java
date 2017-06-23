@@ -7,7 +7,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import java.io.File;
@@ -23,6 +25,9 @@ import static com.petrovma92.tests.MainTest.*;
 
 @RunWith(JUnitParamsRunner.class)
 public class NegativeTests {
+
+    @Rule
+    public TestRule runTwiceRule = new RunAgainRule();
 
     @Parameters
     public Iterator<Object[]> negativeTestFromFile() throws IOException, JSONException {
@@ -72,6 +77,7 @@ public class NegativeTests {
     }
 
     @Test(expected = Exception.class)
+    @Unstable(5)
     @Parameters(method = "negativeTestFromFile")
 //    @Parameters(method = "negativeTestRandom")
     public void negativeTestCreateException(String fileNameExist, String fileNameException) throws IOException {
@@ -91,6 +97,7 @@ public class NegativeTests {
     }
 
     @Test
+    @Unstable(3)
     @Parameters(method = "negativeTestFromFile")
 //    @Parameters(method = "negativeTestRandom")
     public void negativeTestCreateFileAlreadyExist(String fileNameExist, String fileNameException) throws IOException {
