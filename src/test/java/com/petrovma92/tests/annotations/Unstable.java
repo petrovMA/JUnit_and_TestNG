@@ -1,4 +1,4 @@
-package com.petrovma92.tests;
+package com.petrovma92.tests.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Unstable {
-    int value();
+    int value() default 1;
 }

@@ -1,5 +1,6 @@
-package com.petrovma92.tests;
+package com.petrovma92.tests.rules;
 
+import com.petrovma92.tests.annotations.Unstable;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;

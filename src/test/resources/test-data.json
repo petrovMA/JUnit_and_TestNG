@@ -1,34 +1,33 @@
 {
-  "positiveTest" : [
+  "testData" : [
     {
-      "1" : "someFile",
-      "2" : "gdfdfg.txt",
-      "3" : "@!^&)(-=#$%[]}{;'',"
+      "positiveTestCreateFile" : "someFile",
+      "positiveTestCreateFileWithExtension" : "gdfdfg.txt",
+      "positiveTestCreateFileWithSpecificChar" : "@!^&)(-=#$%[]}{;'',"
     },
     {
-      "1" : "376454",
-      "2" : "34543443.xml"
+      "positiveTestCreateFile" : "376454",
+      "positiveTestCreateFileWithExtension" : "34543443.xml"
     },
     {
-      "1" : "SDFSDSCX",
-      "3" : "_________"
+      "positiveTestCreateFile" : "SDFSDSCX",
+      "positiveTestCreateFileWithSpecificChar" : "_________"
     },
     {
-      "2" : "dfgfgdf.json",
-      "3" : "+++::::::"
-    }
-  ],
-  "negativeTest" : [
-    {
-      "1" : "testFile205",
-      "2" : "fdgdf"
+      "positiveTestCreateFileWithExtension" : "dfgfgdf.json",
+      "positiveTestCreateFileWithSpecificChar" : "+++::::::"
     },
     {
-      "1" : "testFile205.json",
-      "2" : ""
+      "negativeTestCreateFileAlreadyExist" : "testFile205",
+      "negativeTestCreateException" : "NULL"
     },
     {
-      "1" : "TEST_FILE205"
+      "negativeTestCreateFileAlreadyExist" : "testFile205.json",
+      "negativeTestCreateException" : ""
+    },
+    {
+      "negativeTestCreateFileAlreadyExist" : "TEST_FILE205",
+      "negativeTestCreateException" : "null"
     }
   ]
 }
