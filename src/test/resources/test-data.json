@@ -21,14 +21,20 @@
   "negativeTest" : [
     {
       "1" : "testFile205",
-      "2" : "fdgdf"
+      "2" : "fdgdf",
+      "3" : "someFile"
     },
     {
       "1" : "testFile205.json",
       "2" : ""
     },
     {
-      "1" : "TEST_FILE205"
+      "1" : "TEST_FILE205",
+      "3" : "text.txt"
+    },
+    {
+      "2" : "null",
+      "3" : "@!^&)(-=#$%[]}{;'',+:"
     }
   ]
 }

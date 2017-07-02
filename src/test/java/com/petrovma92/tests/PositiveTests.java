@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.testng.Assert;
 import org.testng.AssertJUnit;
+import org.testng.SkipException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
@@ -77,6 +78,7 @@ public class PositiveTests extends MainTest {
         return data.iterator();
     }
 
+    @TempDir()
     //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
     @Test(dataProvider = "positiveTestRandom", groups = "positive")
     public void positiveTestCreateFile(String fileName, String fileNameExtension, String specificChar) throws IOException {
@@ -90,10 +92,11 @@ public class PositiveTests extends MainTest {
             AssertJUnit.assertTrue("Файл с именем: \"" + fileSimpleName.getName() + "\" не найден", fileSimpleName.exists());
         }
         else
-            System.out.println("\u001B[36mIGNORE");
+            throw new SkipException("IGNORE\nfileName null or empty.");
 
     }
 
+    @TempDir()
     //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
     @Test(dataProvider = "positiveTestRandom", groups = "positive")
     public void positiveTestCreateFileWithExtension(String fileName, String fileNameExtension, String specificChar) throws IOException {
@@ -110,9 +113,10 @@ public class PositiveTests extends MainTest {
             softAssert.assertAll();
         }
         else
-            System.out.println("\u001B[36mIGNORE");
+            throw new SkipException("IGNORE\nfileName null or empty.");
     }
 
+    @TempDir()
     //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
     @Test(dataProvider = "positiveTestRandom", groups = "positive")
     public void positiveTestCreateFileWithSpecificChar(String fileName, String fileNameExtension, String specificChar) throws IOException {
@@ -125,6 +129,6 @@ public class PositiveTests extends MainTest {
             Assert.assertTrue(fileSpecCharName.exists(), "Файл не найден");
         }
         else
-            System.out.println("\u001B[36mIGNORE");
+            throw new SkipException("IGNORE\nfileName null or empty.");
     }
 }

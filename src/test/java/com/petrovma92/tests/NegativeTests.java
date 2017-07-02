@@ -4,8 +4,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.testng.Assert;
+import org.testng.SkipException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,16 +30,22 @@ public class NegativeTests extends MainTest {
         JSONArray array = json.getJSONArray("negativeTest");
 
         JSONObject obj;
-        String data1, data2;
+        String data1, data2, data3;
         for(int i = 0; i < array.length(); i++) {
             obj = array.getJSONObject(i);
             try {
                 data1 = obj.getString("1");
             } catch (JSONException e) {data1 = null;}
             try {
-                data2 = obj.getString("2");
+                if(obj.getString("2").equalsIgnoreCase("NULL"))
+                    data2 = null;
+                else
+                    data2 = obj.getString("2");
             } catch (JSONException e) {data2 = null;}
-            data.add(new Object[]{data1, data2});
+            try {
+                data3 = obj.getString("1");
+            } catch (JSONException e) {data3 = null;}
+            data.add(new Object[]{data1, data2, data3});
         }
 
         return data.iterator();
@@ -52,22 +60,26 @@ public class NegativeTests extends MainTest {
 
         data.add(new Object[]{
                 super.generateRandomString(20, false, true, false),
-                super.generateRandomString(20, false, false, false)});
+                super.generateRandomString(20, false, false, false),
+                super.generateRandomString(20, false, false, true)});
 
         data.add(new Object[]{
                 super.generateRandomString(20, false, true, true),
-                super.generateRandomString(0, false, true, false)});
+                super.generateRandomString(0, false, true, false),
+                super.generateRandomString(20, true, true, false)});
 
         data.add(new Object[]{
                 super.generateRandomString(20, false, false, true),
-                super.generateRandomString(5, true, true, true)});
+                super.generateRandomString(5, true, true, true),
+                super.generateRandomString(20, false, true, true)});
 
         return data.iterator();
     }
 
+    @TempDir()
     //    @Test(dataProvider = "negativeTestFromFile", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
     @Test(dataProvider = "negativeTestRandom", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
-    public void negativeTestCreateException(String fileNameExist, String fileNameException) throws IOException {
+    public void negativeTestCreateException(String fileNameExist, String fileNameException, String fileInReadOnlyDir) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
         if (fileNameException == null || fileNameException.isEmpty())
@@ -75,15 +87,14 @@ public class NegativeTests extends MainTest {
             File f = new File(fileNameException);
             Assert.assertFalse(f.createNewFile());
         }
-        else {
-            System.out.println("\u001B[36mIGNORE");
-            throw new NullPointerException();
-        }
+        else
+            throw new SkipException("IGNORE\nfileName notNull or notEmpty.");
     }
 
+    @TempDir(read = false, write = true)
     //    @Test(dataProvider = "negativeTestFromFile", groups = "negative", alwaysRun = true)
     @Test(dataProvider = "negativeTestRandom", groups = "negative", alwaysRun = true)
-    public void negativeTestCreateFileAlreadyExist(String fileNameExist, String fileNameException) throws IOException {
+    public void negativeTestCreateFileAlreadyExist(String fileNameExist, String fileNameException, String fileInReadOnlyDir) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
         if (fileNameExist != null && !fileNameExist.isEmpty())
@@ -94,6 +105,23 @@ public class NegativeTests extends MainTest {
             assert negativeTestFile.exists();
         }
         else
-            System.out.println("\u001B[36mIGNORE");
+            throw new SkipException("IGNORE\nfileName null or empty.");
+    }
+
+    @TempDir(read = false, write = false)
+    //    @Test(dataProvider = "negativeTestFromFile", groups = "negative", alwaysRun = true)
+    @Test(dataProvider = "negativeTestRandom", groups = "negative", alwaysRun = true, expectedExceptions = IOException.class,
+    expectedExceptionsMessageRegExp = "Отказано в доступе")
+    public void cannotCreateFileInAReadOnlyDir(String fileNameExist, String fileNameException, String fileInReadOnlyDir) throws IOException {
+        System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
+
+        if (fileInReadOnlyDir != null && !fileInReadOnlyDir.isEmpty())
+        {
+            File negativeTestFile = new File(pathToTempFile, fileInReadOnlyDir);
+            System.out.println("createFile: " + String.valueOf(negativeTestFile.createNewFile()).toUpperCase());
+        }
+        else
+            throw new SkipException("IGNORE\nfileName null or empty.");
+
     }
 }

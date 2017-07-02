@@ -4,20 +4,38 @@ import org.testng.annotations.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Random;
 
 public class MainTest {
-    private File tempFile;
+    private static File tempDir;
     static String pathToTempFile;
 
     static File fileSimpleName;
     static File fileNameWithExtension;
     static File fileSpecCharName;
 
-    @Test
-    public void empty(){}
+    @BeforeMethod(groups = {"negative", "positive"})
+    public void before(Method m) throws IOException {
+        System.out.println("\u001B[35m\u001B[01m\n@BeforeMethod\u001B[35m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName());
+
+        boolean read = true, write = true;
+        if(m.getAnnotation(TempDir.class) != null) {
+            read = m.getAnnotation(TempDir.class).read();
+            write = m.getAnnotation(TempDir.class).write();
+        }
+        System.out.println("setReadable("+read+") = " + tempDir.setReadable(read) + ";" + " setWritable("+write+") = " + tempDir.setWritable(write) + ";\u001B[0m");
+    }
+
+    @AfterMethod(groups = {"negative", "positive"})
+    public void after(Method m) throws IOException {
+        System.out.println("\u001B[35m\u001B[01m\n@AfterMethod\u001B[35m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName());
+
+        tempDir.setReadable(true);
+        tempDir.setWritable(true);
+    }
 
     @BeforeSuite(groups = {"negative", "positive"})
     private void preConditions() throws IOException {
@@ -25,8 +43,8 @@ public class MainTest {
         File currentDirFile = new File(".");
         String helper = currentDirFile.getCanonicalPath();
 
-        tempFile = Files.createTempDirectory(Paths.get(helper), "tmpDir").toFile();
-        pathToTempFile = tempFile.getAbsolutePath();
+        tempDir = Files.createTempDirectory(Paths.get(helper), "tmpDir").toFile();
+        pathToTempFile = tempDir.getAbsolutePath();
 
         System.out.println("createTempDirectory\u001B[0m");
     }
@@ -42,7 +60,7 @@ public class MainTest {
             }
         }
 
-        System.out.println("\u001B[32m\u001B[01mdeleteTempDirectory: " + String.valueOf(tempFile.delete()).toUpperCase() + "\n==============\u001B[0m");
+        System.out.println("\u001B[32m\u001B[01mdeleteTempDirectory: " + String.valueOf(tempDir.delete()).toUpperCase() + "\n==============\u001B[0m");
     }
 
     String generateRandomString(int length, boolean upperChar, boolean lowerChar, boolean integer) {
