@@ -1,5 +1,9 @@
 package com.petrovma92.tests;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,8 +13,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -52,9 +55,15 @@ public class NegativeTests extends MainTest {
     }
 
     @DataProvider
-    private Iterator<Object[]> negativeTestRandom() throws IOException, JSONException {
+    private Iterator<Object[]> negativeTestRandom() throws IOException, JSONException, InvalidFormatException {
         System.out.println("\u001B[36m\u001B[01m\n@DataProvider\u001B[36m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
+        // TODO: 03.07.17 create magic here
+        OPCPackage pkg = OPCPackage.open(new File("/home/user/Java/Courses/JUnit_and_TestNG/TestNG/src/test/resources/testData.xlsx"));
+        XSSFWorkbook wb = new XSSFWorkbook(pkg);
+
+        System.out.println(wb.getSheet("testData").getRow(0).getCell(2).getStringCellValue());
+        System.out.println(wb.getSheet("testData").getRow(0).getCell(0).getStringCellValue());
 
         List<Object[]> data = new ArrayList<>();
 
