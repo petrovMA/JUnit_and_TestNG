@@ -13,6 +13,7 @@ public class MainTest {
     private static File tempDir;
     static String pathToTempFile;
 
+    static int cuntTestRun = 0;
     static File fileSimpleName;
     static File fileNameWithExtension;
     static File fileSpecCharName;
