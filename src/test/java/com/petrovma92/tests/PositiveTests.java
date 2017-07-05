@@ -1,5 +1,9 @@
 package com.petrovma92.tests;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +16,7 @@ import org.testng.asserts.SoftAssert;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,6 +25,34 @@ import java.util.Iterator;
 import java.util.List;
 
 public class PositiveTests extends MainTest {
+
+    @DataProvider
+    private Iterator<Object[]> positiveTestFromExel(Method m) throws IOException, JSONException, InvalidFormatException {
+        System.out.println("\u001B[36m\u001B[01m\n@DataProvider\u001B[36m\n"+new Object(){}.getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
+
+        final int START_READ_FROM = 1;
+
+        int length = m.getParameterTypes().length;
+
+        OPCPackage pkg = OPCPackage.open(new File( System.getProperty("user.dir") + "/src/test/resources/testData.xlsx"));
+        XSSFWorkbook wb = new XSSFWorkbook(pkg);
+        XSSFSheet sheet = wb.getSheet("testData");
+
+        List<Object[]> data = new ArrayList<>();
+        Object[] arr;
+
+        int i = 0;
+        while (hasNext(sheet, START_READ_FROM, length, i)) {
+            arr = new Object[length];
+            for(int j = 0; j < length; j++) {
+                arr[j] = getCellValue(sheet, START_READ_FROM+j, i);
+            }
+            data.add(arr);
+            i++;
+        }
+
+        return data.iterator();
+    }
 
     @DataProvider
     private Iterator<Object[]> positiveTestFromFile() throws IOException, JSONException {
@@ -80,7 +113,8 @@ public class PositiveTests extends MainTest {
 
     @TempDir()
     //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
-    @Test(dataProvider = "positiveTestRandom", groups = "positive")
+    @Test(dataProvider = "positiveTestFromExel", groups = "positive")
+//    @Test(dataProvider = "positiveTestRandom", groups = "positive")
     public void positiveTestCreateFile(String fileName, String fileNameExtension, String specificChar) throws IOException {
         System.out.println("\u001B[34m\n" + getClass().getName() + "." + new Object() {
         }.getClass().getEnclosingMethod().getName() + "\u001B[0m");
@@ -98,7 +132,8 @@ public class PositiveTests extends MainTest {
 
     @TempDir()
     //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
-    @Test(dataProvider = "positiveTestRandom", groups = "positive")
+    @Test(dataProvider = "positiveTestFromExel", groups = "positive")
+//    @Test(dataProvider = "positiveTestRandom", groups = "positive")
     public void positiveTestCreateFileWithExtension(String fileName, String fileNameExtension, String specificChar) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
@@ -118,7 +153,8 @@ public class PositiveTests extends MainTest {
 
     @TempDir()
     //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
-    @Test(dataProvider = "positiveTestRandom", groups = "positive")
+    @Test(dataProvider = "positiveTestFromExel", groups = "positive")
+//    @Test(dataProvider = "positiveTestRandom", groups = "positive")
     public void positiveTestCreateFileWithSpecificChar(String fileName, String fileNameExtension, String specificChar) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 

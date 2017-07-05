@@ -1,7 +1,10 @@
 package com.petrovma92.tests;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.testng.annotations.*;
 
+import javax.activation.UnsupportedDataTypeException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -125,5 +128,46 @@ public class MainTest {
         }
 
         return builder.toString();
+    }
+
+
+    String getCellValue(XSSFSheet sheet, int testDataNumber, int column) {
+        try {
+            Cell cell = sheet.getRow(testDataNumber).getCell(column);
+            if (cell != null) {
+                switch (cell.getCellTypeEnum()) {
+                    case FORMULA:
+                        return String.valueOf(cell.getCellFormula());
+                    case NUMERIC:
+                        return String.valueOf(cell.getNumericCellValue());
+                    case STRING:
+                        return cell.getStringCellValue();
+                    case BLANK:
+                        return null;
+                    case BOOLEAN:
+                        return String.valueOf(cell.getBooleanCellValue());
+                    case ERROR:
+                        return String.valueOf(cell.getErrorCellValue());
+                    default:
+                        throw new UnsupportedDataTypeException();
+                }
+            }
+            else return null;
+
+        } catch (UnsupportedDataTypeException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    boolean hasNext(XSSFSheet sheet, int startReadFrom, int maxTestDataCount, int column) {
+        int i = startReadFrom;
+        while(i < maxTestDataCount + startReadFrom) {
+            if(getCellValue(sheet, i, column) != null)
+                return true;
+            i++;
+        }
+        return false;
     }
 }

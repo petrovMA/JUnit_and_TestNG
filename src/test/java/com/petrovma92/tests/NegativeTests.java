@@ -26,12 +26,31 @@ import java.util.List;
 public class NegativeTests extends MainTest {
 
     @DataProvider
-    private static Iterator<Object[]> negativeTestFromExel(Method m) throws IOException, JSONException, InvalidFormatException {
+    private Iterator<Object[]> negativeTestFromExel(Method m) throws IOException, JSONException, InvalidFormatException {
         System.out.println("\u001B[36m\u001B[01m\n@DataProvider\u001B[36m\n"+new Object(){}.getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
+
+        final int START_READ_FROM = 1;
 
         int length = m.getParameterTypes().length;
 
-        return new FileIterator(new File( System.getProperty("user.dir") + "/src/test/resources/testData.xlsx"), length, 5, 3);
+        OPCPackage pkg = OPCPackage.open(new File( System.getProperty("user.dir") + "/src/test/resources/testData.xlsx"));
+        XSSFWorkbook wb = new XSSFWorkbook(pkg);
+        XSSFSheet sheet = wb.getSheet("testData");
+
+        List<Object[]> data = new ArrayList<>();
+        Object[] arr;
+
+        int i = 0;
+        while (hasNext(sheet, START_READ_FROM, length, i)) {
+            arr = new Object[length];
+            for(int j = 0; j < length; j++) {
+                arr[j] = getCellValue(sheet, START_READ_FROM+j, i);
+            }
+            data.add(arr);
+            i++;
+        }
+
+        return data.iterator();
     }
 
     @DataProvider
@@ -91,7 +110,7 @@ public class NegativeTests extends MainTest {
 
     @TempDir()
     //    @Test(dataProvider = "negativeTestFromJson", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
-        @Test(dataProvider = "negativeTestFromExel", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
+    @Test(dataProvider = "negativeTestFromExel", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
 //    @Test(dataProvider = "negativeTestRandom", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
     public void negativeTestCreateException(String fileNameExist, String fileNameException, String fileInReadOnlyDir) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
@@ -107,7 +126,7 @@ public class NegativeTests extends MainTest {
 
     @TempDir(read = false, write = true)
     //    @Test(dataProvider = "negativeTestFromJson", groups = "negative", alwaysRun = true)
-        @Test(dataProvider = "negativeTestFromExel", groups = "negative", alwaysRun = true)
+    @Test(dataProvider = "negativeTestFromExel", groups = "negative", alwaysRun = true)
 //    @Test(dataProvider = "negativeTestRandom", groups = "negative", alwaysRun = true)
     public void negativeTestCreateFileAlreadyExist(String fileNameExist, String fileNameException, String fileInReadOnlyDir) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
@@ -125,7 +144,7 @@ public class NegativeTests extends MainTest {
 
     @TempDir(read = false, write = false)
     //    @Test(dataProvider = "negativeTestFromJson", groups = "negative", alwaysRun = true)
-        @Test(dataProvider = "negativeTestFromExel", groups = "negative", alwaysRun = true, expectedExceptions = IOException.class, expectedExceptionsMessageRegExp = "Отказано в доступе")
+    @Test(dataProvider = "negativeTestFromExel", groups = "negative", alwaysRun = true, expectedExceptions = IOException.class, expectedExceptionsMessageRegExp = "Отказано в доступе")
 //    @Test(dataProvider = "negativeTestRandom", groups = "negative", alwaysRun = true, expectedExceptions = IOException.class, expectedExceptionsMessageRegExp = "Отказано в доступе")
     public void cannotCreateFileInAReadOnlyDir(String fileNameExist, String fileNameException, String fileInReadOnlyDir) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
@@ -138,84 +157,5 @@ public class NegativeTests extends MainTest {
         else
             throw new SkipException("IGNORE\nfileName null or empty.");
 
-    }
-
-    private static class FileIterator implements Iterator<Object[]> {
-
-        private int length;
-        private XSSFSheet sheet;
-        private int startReadFrom;
-        private int maxTestDataCount;
-
-        FileIterator(File file, int length, int startReadFrom, int maxTestDataCount) throws InvalidFormatException, IOException {
-            this.length = length;
-            this.startReadFrom = startReadFrom;
-            this.maxTestDataCount = maxTestDataCount;
-
-
-            // TODO: 03.07.17 create magic here
-            OPCPackage pkg = OPCPackage.open(file);
-            XSSFWorkbook wb = new XSSFWorkbook(pkg);
-            this.sheet = wb.getSheet("testData");
-
-            System.out.println(wb.getSheet("testData").getRow(1).getCell(2).getStringCellValue());
-            System.out.println(wb.getSheet("testData").getRow(1).getCell(0).getStringCellValue());
-        }
-
-        @Override
-        public boolean hasNext() {
-            int i = startReadFrom;
-            while(i < maxTestDataCount + startReadFrom) {
-                if(getCellValue(i, cuntTestRun+1) != null)
-                    return true;
-                i++;
-            }
-            return false;
-        }
-
-        @Override
-        public Object[] next() {
-            Object[] parameters = new Object[length];
-            for (int i = 0; i < length; i++) {
-                parameters[i] = getCellValue(i+startReadFrom, cuntTestRun);
-            }
-            cuntTestRun++;
-            return parameters;
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        private String getCellValue(int testDataNumber, int column) {
-            try {
-                Cell cell = sheet.getRow(testDataNumber).getCell(column);
-                if (cell != null) {
-                    switch (cell.getCellTypeEnum()) {
-                        case FORMULA:
-                            return String.valueOf(cell.getCellFormula());
-                        case NUMERIC:
-                            return String.valueOf(cell.getNumericCellValue());
-                        case STRING:
-                            return cell.getStringCellValue();
-                        case BLANK:
-                            return null;
-                        case BOOLEAN:
-                            return String.valueOf(cell.getBooleanCellValue());
-                        case ERROR:
-                            return String.valueOf(cell.getErrorCellValue());
-                        default:
-                            throw new UnsupportedDataTypeException();
-                    }
-                }
-                else return null;
-
-            } catch (UnsupportedDataTypeException e)
-            {
-                e.printStackTrace();
-                return null;
-            }
-        }
     }
 }
