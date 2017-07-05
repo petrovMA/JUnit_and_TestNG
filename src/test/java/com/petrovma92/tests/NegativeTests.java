@@ -29,7 +29,7 @@ public class NegativeTests extends MainTest {
     private Iterator<Object[]> negativeTestFromExel(Method m) throws IOException, JSONException, InvalidFormatException {
         System.out.println("\u001B[36m\u001B[01m\n@DataProvider\u001B[36m\n"+new Object(){}.getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
-        final int START_READ_FROM = 1;
+        final int START_READ_FROM = 5;
 
         int length = m.getParameterTypes().length;
 
