@@ -16,7 +16,6 @@ public class MainTest {
     private static File tempDir;
     static String pathToTempFile;
 
-    static int cuntTestRun = 0;
     static File fileSimpleName;
     static File fileNameWithExtension;
     static File fileSpecCharName;
@@ -141,9 +140,9 @@ public class MainTest {
                     case NUMERIC:
                         return String.valueOf(cell.getNumericCellValue());
                     case STRING:
-                        return cell.getStringCellValue();
+                        return cell.getStringCellValue().equalsIgnoreCase("null") ? null : cell.getStringCellValue();
                     case BLANK:
-                        return null;
+                        return "";
                     case BOOLEAN:
                         return String.valueOf(cell.getBooleanCellValue());
                     case ERROR:
@@ -152,7 +151,7 @@ public class MainTest {
                         throw new UnsupportedDataTypeException();
                 }
             }
-            else return null;
+            else return "";
 
         } catch (UnsupportedDataTypeException e)
         {
@@ -163,8 +162,10 @@ public class MainTest {
 
     boolean hasNext(XSSFSheet sheet, int startReadFrom, int maxTestDataCount, int column) {
         int i = startReadFrom;
+        String s;
         while(i < maxTestDataCount + startReadFrom) {
-            if(getCellValue(sheet, i, column) != null)
+            s = getCellValue(sheet, i, column);
+            if(s == null || !s.isEmpty())
                 return true;
             i++;
         }
