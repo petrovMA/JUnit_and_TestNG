@@ -4,7 +4,6 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +12,6 @@ import org.testng.SkipException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import javax.activation.UnsupportedDataTypeException;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -124,7 +122,7 @@ public class NegativeTests extends MainTest {
             throw new SkipException("IGNORE\nfileName notNull or notEmpty.");
     }
 
-    @TempDir(read = false, write = true)
+    @TempDir(read = false)
     //    @Test(dataProvider = "negativeTestFromJson", groups = "negative", alwaysRun = true)
     @Test(dataProvider = "negativeTestFromExel", groups = "negative", alwaysRun = true)
 //    @Test(dataProvider = "negativeTestRandom", groups = "negative", alwaysRun = true)
