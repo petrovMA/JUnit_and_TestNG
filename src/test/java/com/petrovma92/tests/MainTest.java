@@ -29,14 +29,6 @@ public class MainTest {
         System.out.println("setReadable("+read+") = " + tempDir.setReadable(read) + ";" + " setWritable("+write+") = " + tempDir.setWritable(write) + ";\u001B[0m");
     }
 
-    @AfterMethod(groups = {"negative", "positive"})
-    public void after(Method m) throws IOException {
-        System.out.println("\u001B[35m\u001B[01m\n@AfterMethod\u001B[35m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName());
-
-        tempDir.setReadable(true);
-        tempDir.setWritable(true);
-    }
-
     @BeforeSuite(groups = {"negative", "positive"})
     private void preConditions() throws IOException {
         System.out.println("\u001B[32m\u001B[01m=============\n@BeforeSuite");
@@ -52,6 +44,10 @@ public class MainTest {
     @AfterSuite(groups = {"negative", "positive"})
     private void postConditions() {
         System.out.println("\n\u001B[32m\u001B[01m@AfterSuite\u001B[0m");
+
+        System.out.println("setReadable = " + tempDir.setReadable(true));
+        System.out.println("setWritable = " + tempDir.setWritable(true));
+
         File[] files = new File(pathToTempFile).listFiles();
 
         if(files != null) {

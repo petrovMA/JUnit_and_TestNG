@@ -43,7 +43,7 @@ public class NegativeTests extends MainTest {
                     data2 = obj.getString("2");
             } catch (JSONException e) {data2 = null;}
             try {
-                data3 = obj.getString("1");
+                data3 = obj.getString("3");
             } catch (JSONException e) {data3 = null;}
             data.add(new Object[]{data1, data2, data3});
         }
@@ -70,15 +70,15 @@ public class NegativeTests extends MainTest {
 
         data.add(new Object[]{
                 super.generateRandomString(20, false, false, true),
-                super.generateRandomString(5, true, true, true),
+                super.generateRandomString(0, false, false, false),
                 super.generateRandomString(20, false, true, true)});
 
         return data.iterator();
     }
 
     @TempDir()
-    //    @Test(dataProvider = "negativeTestFromFile", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
-    @Test(dataProvider = "negativeTestRandom", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
+        @Test(dataProvider = "negativeTestFromFile", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
+//    @Test(dataProvider = "negativeTestRandom", groups = "negative", expectedExceptions = {IOException.class, NullPointerException.class}, alwaysRun = true)
     public void negativeTestCreateException(String fileNameExist, String fileNameException, String fileInReadOnlyDir) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
@@ -91,9 +91,9 @@ public class NegativeTests extends MainTest {
             throw new SkipException("IGNORE\nfileName notNull or notEmpty.");
     }
 
-    @TempDir(read = false, write = true)
-    //    @Test(dataProvider = "negativeTestFromFile", groups = "negative", alwaysRun = true)
-    @Test(dataProvider = "negativeTestRandom", groups = "negative", alwaysRun = true)
+    @TempDir(read = false)
+        @Test(dataProvider = "negativeTestFromFile", groups = "negative", alwaysRun = true)
+//    @Test(dataProvider = "negativeTestRandom", groups = "negative", alwaysRun = true)
     public void negativeTestCreateFileAlreadyExist(String fileNameExist, String fileNameException, String fileInReadOnlyDir) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
@@ -109,9 +109,8 @@ public class NegativeTests extends MainTest {
     }
 
     @TempDir(read = false, write = false)
-    //    @Test(dataProvider = "negativeTestFromFile", groups = "negative", alwaysRun = true)
-    @Test(dataProvider = "negativeTestRandom", groups = "negative", alwaysRun = true, expectedExceptions = IOException.class,
-    expectedExceptionsMessageRegExp = "Отказано в доступе")
+        @Test(dataProvider = "negativeTestFromFile", groups = "negative", alwaysRun = true, expectedExceptions = IOException.class, expectedExceptionsMessageRegExp = "Отказано в доступе")
+//    @Test(dataProvider = "negativeTestRandom", groups = "negative", alwaysRun = true, expectedExceptions = IOException.class, expectedExceptionsMessageRegExp = "Отказано в доступе")
     public void cannotCreateFileInAReadOnlyDir(String fileNameExist, String fileNameException, String fileInReadOnlyDir) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 

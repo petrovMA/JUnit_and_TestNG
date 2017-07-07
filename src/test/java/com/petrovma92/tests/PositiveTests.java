@@ -73,14 +73,14 @@ public class PositiveTests extends MainTest {
         data.add(new Object[]{
                 super.generateRandomString(20, false, false, true),
                 super.generateRandomString(15, true, true, true) + "." +super.generateRandomString(7, true, true, false),
-                super.generateRandomString(20, false, false, false)});
+                super.generateRandomString(20, true, false, true)});
 
         return data.iterator();
     }
 
     @TempDir()
-    //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
-    @Test(dataProvider = "positiveTestRandom", groups = "positive")
+        @Test(dataProvider = "positiveTestFromFile", groups = "positive")
+//    @Test(dataProvider = "positiveTestRandom", groups = "positive")
     public void positiveTestCreateFile(String fileName, String fileNameExtension, String specificChar) throws IOException {
         System.out.println("\u001B[34m\n" + getClass().getName() + "." + new Object() {
         }.getClass().getEnclosingMethod().getName() + "\u001B[0m");
@@ -97,8 +97,8 @@ public class PositiveTests extends MainTest {
     }
 
     @TempDir()
-    //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
-    @Test(dataProvider = "positiveTestRandom", groups = "positive")
+        @Test(dataProvider = "positiveTestFromFile", groups = "positive")
+//    @Test(dataProvider = "positiveTestRandom", groups = "positive")
     public void positiveTestCreateFileWithExtension(String fileName, String fileNameExtension, String specificChar) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
@@ -117,8 +117,8 @@ public class PositiveTests extends MainTest {
     }
 
     @TempDir()
-    //    @Test(dataProvider = "positiveTestFromFile", groups = "positive")
-    @Test(dataProvider = "positiveTestRandom", groups = "positive")
+        @Test(dataProvider = "positiveTestFromFile", groups = "positive")
+//    @Test(dataProvider = "positiveTestRandom", groups = "positive")
     public void positiveTestCreateFileWithSpecificChar(String fileName, String fileNameExtension, String specificChar) throws IOException {
         System.out.println("\u001B[34m\n"+getClass().getName() + "."+ new Object(){}.getClass().getEnclosingMethod().getName()+"\u001B[0m");
 
